@@ -49,6 +49,41 @@ flag. See [`catalog/catalog.go`](catalog/catalog.go) for a list of pre-defined f
 
 ![Image of bent-big-h fractal](bent-big-h.png)
 
+## Grammar Expansion
+
+The sequence a string is initialised to the seed's value. On each iteration each rune in the string
+is matched against the rules defined in the grammar. A new sequence string is built by replacing the
+rune by the substitution defined in the rule, delimited by `<` and `>` which indicate that the
+plotter should step down in scale during this part of the sequence. If the rune does not match a
+rule then it is simply copied into the new sequence.
+
+As an example, given the seed `F++F++F` and a rule `F: F-F++F-F` the following sequences would be generated on each iteration:
+
+ 0. `F++F++F`
+ 1. `<F-F++F-F>++<F-F++F-F>++<F-F++F-F>`
+ 2. `<<F-F++F-F>-<F-F++F-F>++<F-F++F-F>-<F-F++F-F>>++<<F-F++F-F>-<F-F++F-F>++<F-F++F-F>-<F-F++F-F>>++<<F-F++F-F>-<F-F++F-F>++<F-F++F-F>-<F-F++F-F>>
+`
+
+Multiple rules can be specified. For example the `sierpinksi-gasket` example has a seed of `F--F--F`
+and two rules: `F: F--F--F--GG` and `G: GG`. These generate the following sequences:
+
+ 0. `F--F--F`
+ 1. `<F--F--F--GG>--<F--F--F--GG>--<F--F--F--GG>`
+ 2. `<<F--F--F--GG>--<F--F--F--GG>--<F--F--F--GG>--<GG><GG>>--<<F--F--F--GG>--<F--F--F--GG>--<F--F--F--GG>--<GG><GG>>--<<F--F--F--GG>--<F--F--F--GG>--<F--F--F--GG>--<GG><GG>>`
+
+## Plotting Symbols
+
+The Plotter interprets the following symbols. All others symbols are ignored.
+
+ - `F` - move forward by the current step size and draw a line from the previous position to the new one
+ - `G` - move forward by the current step size without drawing a line
+ - `+` - rotate clockwise by the plotter's configured angle
+ - `-` - rotate anticlockwise by the plotter's configured angle
+ - `[` - save the current position and angle 
+ - `]` - restore the previous position and angle
+ - `|` - identical behaviour to `F` however it is usually not expanded in a grammar so can be used to preserve scale
+ - `<` - reduce the step size and line width by multiplying by StepDelta and LineWidthDelta
+ - '>' - restore the previous step size and line width
 
 LICENSE
 =======
